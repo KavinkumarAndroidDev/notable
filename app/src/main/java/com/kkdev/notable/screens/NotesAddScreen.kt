@@ -78,8 +78,12 @@ fun NotesAddScreen(
                 actions ={
                     IconButton(
                         onClick = {
-                            onEvent(NotesEvent.SaveNotes)
-                            navController.popBackStack()
+                            if (state.notesContent.isNotBlank()){
+                                onEvent(NotesEvent.SaveNotes)
+                                navController.popBackStack()
+                            }else{
+                                return@IconButton
+                            }
 
                         }
                     ) {

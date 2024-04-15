@@ -96,7 +96,7 @@ fun NotesScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            items(state.notes, key = { it.noteTitle }) { notes ->
+            items(state.notes, key = { it.id }) { notes ->
                 SwipeToDeleteContainer(
                     item = notes,
                     onDelete = {
@@ -122,6 +122,7 @@ fun NotesScreen(
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> SwipeToDeleteContainer(
     item: T,

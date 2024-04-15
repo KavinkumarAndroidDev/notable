@@ -41,11 +41,13 @@ fun CustomNotesView(
         Column (
             modifier = Modifier.fillMaxWidth()
         ){
-            Text(
-                text = NoteTitle,
-                style = AppTheme.typography.labelLarge,
-                maxLines = 1
-            )
+            if (NoteTitle.isNotBlank()){
+                Text(
+                    text = NoteTitle,
+                    style = AppTheme.typography.labelLarge,
+                    maxLines = 1
+                )
+            }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = NoteContent,

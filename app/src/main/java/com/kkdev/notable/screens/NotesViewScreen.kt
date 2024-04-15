@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +33,11 @@ fun NotesViewScreen(
                 TopAppBar(title = {
 
                     Text(
-                        text = selectedNote?.noteTitle ?: "",
+                        text = if(selectedNote?.noteTitle?.isBlank() == true){
+                            "notable"
+                        } else {
+                            selectedNote?.noteTitle ?: ""
+                        },
                         style = AppTheme.typography.labelLarge,
                         maxLines = 1
                     )
@@ -65,6 +71,7 @@ fun NotesViewScreen(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                         .heightIn(min = 56.dp)
+                        .verticalScroll(rememberScrollState())
                 )
             }
         }

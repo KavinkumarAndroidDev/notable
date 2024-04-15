@@ -58,7 +58,7 @@ class NotesViewModel(
                 val notesContent = state.value.notesContent
                 val lastedited = getFormattedTime()
 
-                if (notesContent.isBlank() || notesTitle.isBlank()) {
+                if (notesContent.isBlank()) {
                     return
                 }
 
