@@ -50,6 +50,7 @@ import com.kkdev.notable.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     state: NotesState,
@@ -89,7 +90,6 @@ fun NotesScreen(
         modifier = Modifier.padding(16.dp)
     ) {
         LazyColumn(
-            //contentPadding = PaddingValues(it),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),

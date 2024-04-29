@@ -34,7 +34,6 @@ fun SettingScreen(
         topBar = {
             CustomAppBar(
                 onBackPressed = { navController.popBackStack()},
-                navController = navController,
                 titleText = "Settings"
             )
         }
@@ -116,7 +115,7 @@ fun SortTypeSettingMenu(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                SortType.values().forEach { sortType ->
+                SortType.entries.forEach { sortType ->
                     Text(
                         text = when (sortType) {
                             SortType.NEWEST_FIRST -> "Sorted by newest first"

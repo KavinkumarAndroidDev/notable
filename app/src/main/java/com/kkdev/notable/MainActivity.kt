@@ -1,8 +1,6 @@
 package com.kkdev.notable
 
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -10,14 +8,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.room.Room
 import com.kkdev.notable.data.NotesDatabase
-import com.kkdev.notable.data.model.Notes
 import com.kkdev.notable.navigation.NavigationItem
 import com.kkdev.notable.screens.NotesAddScreen
 import com.kkdev.notable.screens.NotesScreen
@@ -94,21 +89,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-object ParcelableUtils {
-    fun writeToByteArray(parcelable: Parcelable): ByteArray {
-        val parcel = Parcel.obtain()
-        parcelable.writeToParcel(parcel, 0)
-        val bytes = parcel.marshall()
-        parcel.recycle()
-        return bytes
-    }
 
-    fun <T : Parcelable> readFromByteArray(bytes: ByteArray, clazz: Class<T>): T? {
-        val parcel = Parcel.obtain()
-        parcel.unmarshall(bytes, 0, bytes.size)
-        parcel.setDataPosition(0)
-        return clazz.getConstructor(Parcel::class.java).newInstance(parcel)
-    }
-}
 
 //use dependency injection for data modules and db implementation

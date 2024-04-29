@@ -8,7 +8,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.kkdev.notable.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -16,7 +15,7 @@ import com.kkdev.notable.ui.theme.AppTheme
 fun CustomAppBar(
     onBackPressed: () -> Unit,
     titleText: String,
-    navController: NavController
+
 ) {
     TopAppBar(
         title = { Text(
