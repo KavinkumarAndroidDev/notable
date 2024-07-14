@@ -6,11 +6,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,8 +43,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kkdev.notable.R
 import com.kkdev.notable.composables.CustomFab
 import com.kkdev.notable.composables.CustomNotesView
 import com.kkdev.notable.data.NotesEvent
@@ -68,7 +74,7 @@ fun NotesScreen(
                 title = { Text(
                     text = "Notable",
                     style = AppTheme.typography.titleNormal)
-               },
+                },
                 actions = {
                     IconButton(onClick = {
 
@@ -89,33 +95,55 @@ fun NotesScreen(
         },
         modifier = Modifier.padding(16.dp)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        if (state.notes.isEmpty()){
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ){
+                Image(
+                    painter = painterResource(id = R.drawable.todo_svg),
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.heightIn(20.dp))
+                Text(
+                    text = "Create your first notes...",
+                    color = AppTheme.colorScheme.onPrimary,
+                    style = AppTheme.typography.labelLarge
+                )
+            }
+        }else{
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
 
-            items(state.notes, key = { it.id }) { notes ->
-                SwipeToDeleteContainer(
-                    item = notes,
-                    onDelete = {
-                        onEvent(NotesEvent.deleteNotes(notes))
-                    }
-                ) { notes ->
-                    CustomNotesView(
-                        NoteTitle = notes.noteTitle,
-                        NoteContent = notes.noteContent,
-                        NoteDate = notes.lastEdited,
-                        onClick = {
-                            val route = "${NavigationItem.ViewNote.route}/${notes.id}" // Pass the note ID to the route
-                            navController.navigate(route)
+                items(state.notes, key = { it.id }) { notes ->
+                    SwipeToDeleteContainer(
+                        item = notes,
+                        onDelete = {
+                            onEvent(NotesEvent.deleteNotes(notes))
                         }
-                    )
-                }
+                    ) { notes ->
+                        CustomNotesView(
+                            NoteTitle = notes.noteTitle,
+                            NoteContent = notes.noteContent,
+                            NoteDate = notes.lastEdited,
+                            onClick = {
+                                val route = "${NavigationItem.ViewNote.route}/${notes.id}" // Pass the note ID to the route
+                                navController.navigate(route)
+                            }
+                        )
+                    }
 
+                }
             }
         }
+
     }
 }
 
