@@ -21,8 +21,7 @@ import com.kkdev.notable.ui.theme.appLightblack
 fun CustomNotesView(
     NoteTitle: String,
     NoteContent: String,
-    NoteDate: String,
-    onClick: () -> Unit
+    NoteDate: String
 ){
     val shape = AppTheme.shape.container
     Box(
@@ -34,7 +33,6 @@ fun CustomNotesView(
                 shape,
             ) // Add a 1dp stroke with the same shape
             .padding(16.dp)
-            .clickable(onClick = onClick)
 
 
         ) {

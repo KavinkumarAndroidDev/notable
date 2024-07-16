@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -95,7 +96,7 @@ fun NotesScreen(
         },
         modifier = Modifier.padding(16.dp)
     ) {
-        if (state.notes.isEmpty()){
+        if(state.noteAvailable){
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -127,19 +128,18 @@ fun NotesScreen(
                         item = notes,
                         onDelete = {
                             onEvent(NotesEvent.deleteNotes(notes))
+                        },
+                        onClick = {
+                            val route = "${NavigationItem.ViewNote.route}/${notes.id}" // Pass the note ID to the route
+                            navController.navigate(route)
                         }
                     ) { notes ->
                         CustomNotesView(
                             NoteTitle = notes.noteTitle,
                             NoteContent = notes.noteContent,
-                            NoteDate = notes.lastEdited,
-                            onClick = {
-                                val route = "${NavigationItem.ViewNote.route}/${notes.id}" // Pass the note ID to the route
-                                navController.navigate(route)
-                            }
+                            NoteDate = notes.lastEdited
                         )
                     }
-
                 }
             }
         }
@@ -155,8 +155,9 @@ fun NotesScreen(
 fun <T> SwipeToDeleteContainer(
     item: T,
     onDelete: (T) -> Unit,
+    onClick: () -> Unit,
     animationDuration: Int = 500,
-    content: @Composable (T) -> Unit
+    content: @Composable (T) -> Unit,
 ) {
     var isRemoved by remember {
         mutableStateOf(false)
@@ -187,9 +188,11 @@ fun <T> SwipeToDeleteContainer(
         ) + fadeOut()
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(),
             shape = AppTheme.shape.container,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+
         ) {
             SwipeToDismiss(
                 state = state,

@@ -53,6 +53,7 @@ import java.util.Locale
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NotesState())
 
+
     fun onEvent(event: NotesEvent) {
         when (event) {
             is NotesEvent.deleteNotes -> {
@@ -158,6 +159,22 @@ import java.util.Locale
                 }
             }
         }
+    }
+    fun checkAvailability(){
+        if (state.value.notes.isEmpty()){
+            _state.update {
+                it.copy(
+                    noteAvailable = true
+                )
+            }
+        }else{
+            _state.update {
+                it.copy(
+                    noteAvailable = false
+                )
+            }
+        }
+
     }
 }
 
