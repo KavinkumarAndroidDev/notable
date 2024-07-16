@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.kkdev.notable.data.NotesDatabase
 import com.kkdev.notable.navigation.NavigationItem
+import com.kkdev.notable.repository.SettingsPreferences
 import com.kkdev.notable.screens.NotesAddScreen
 import com.kkdev.notable.screens.NotesScreen
 import com.kkdev.notable.screens.NotesViewScreen
@@ -29,52 +30,52 @@ class MainActivity : ComponentActivity() {
             "notes.db"
         ).build()
     }
+
+    private val settingsPreferences by lazy {
+        SettingsPreferences(applicationContext)
+    }
+
     private val viewModel by viewModels<NotesViewModel>(
         factoryProducer = {
-            object : ViewModelProvider.Factory{
+            object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return NotesViewModel(db.dao) as T
+                    return NotesViewModel(db.dao, settingsPreferences) as T
                 }
             }
         }
     )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
                 val state by viewModel.state.collectAsState()
-                // A surface container using the 'background' color from the theme
-
                 val navController = rememberNavController()
                 NavHost(
-                    navController = navController, 
+                    navController = navController,
                     startDestination = NavigationItem.Notes.route
                 ) {
-                    composable(NavigationItem.Notes.route){
+                    composable(NavigationItem.Notes.route) {
                         NotesScreen(
                             state = state,
                             onEvent = viewModel::onEvent,
                             navController = navController
                         )
                     }
-                    composable(NavigationItem.Settings.route){
+                    composable(NavigationItem.Settings.route) {
                         SettingScreen(
                             state = state,
                             onEvent = viewModel::onEvent,
                             navController = navController
                         )
                     }
-                    composable(NavigationItem.AddNote.route){
+                    composable(NavigationItem.AddNote.route) {
                         NotesAddScreen(
                             state = state,
                             onEvent = viewModel::onEvent,
                             navController = navController
                         )
                     }
-
-
                     composable("${NavigationItem.ViewNote.route}/{noteId}") { backStackEntry ->
                         val noteId = backStackEntry.arguments?.getString("noteId")
                         val selectedNote = state.notes.find { it.id.toString() == noteId }
@@ -88,6 +89,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
 

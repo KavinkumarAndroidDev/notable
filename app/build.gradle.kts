@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
-
+    id("com.google.dagger.hilt.android")
 }
 // Ensure Kotlin compilation arguments for Room
 kapt {
@@ -80,16 +80,21 @@ dependencies {
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
-    testImplementation ("androidx.room:room-testing:$room_version")
-    androidTestImplementation ("androidx.room:room-testing:$room_version")
+    testImplementation("androidx.room:room-testing:$room_version")
+    androidTestImplementation("androidx.room:room-testing:$room_version")
+
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     implementation("androidx.room:room-ktx:$room_version")
 
+// Preferences DataStore (SharedPreferences like APIs)
 
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    // optional - RxJava2 support
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
 
-
-
-
+    // optional - RxJava3 support
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
 }
-

@@ -9,5 +9,6 @@ data class NotesState (
     val lastEdited: String = "",
     val isShowingAlert: Boolean = false,
     val isShowingSortType: Boolean = false,
-    val sortType: SortType = SortType.NEWEST_FIRST
+    val sortType: SortType = SortType.NEWEST_FIRST,
+    val noteAvailable: Boolean = false
 )

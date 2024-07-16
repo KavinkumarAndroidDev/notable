@@ -7,6 +7,7 @@ import com.kkdev.notable.data.NotesState
 import com.kkdev.notable.data.SortType
 import com.kkdev.notable.data.daos.NotesDao
 import com.kkdev.notable.data.model.Notes
+import com.kkdev.notable.repository.SettingsPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,13 +20,20 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class NotesViewModel(
-    private val dao: NotesDao
-): ViewModel() {
-
+@OptIn(ExperimentalCoroutinesApi::class)class NotesViewModel(
+    private val dao: NotesDao,
+    private val settingsPreferences: SettingsPreferences
+) : ViewModel() {
 
     private val _sortType = MutableStateFlow(SortType.NEWEST_FIRST)
+
+    init {
+        viewModelScope.launch {
+            settingsPreferences.getSortType().collect { sortType ->
+                _sortType.value = sortType
+            }
+        }
+    }
 
     private val _notes = _sortType
         .flatMapLatest { sortType ->
@@ -35,6 +43,7 @@ class NotesViewModel(
                 SortType.OLDEST_FIRST -> dao.getOldNotes()
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
     private val _state = MutableStateFlow(NotesState())
 
     val state = combine(_state, _sortType, _notes) { state, sortType, notes ->
@@ -43,7 +52,6 @@ class NotesViewModel(
             sortType = sortType
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NotesState())
-
 
     fun onEvent(event: NotesEvent) {
         when (event) {
@@ -80,7 +88,10 @@ class NotesViewModel(
             }
 
             is NotesEvent.SortNotes -> {
-                _sortType.value = event.sortType
+                viewModelScope.launch {
+                    settingsPreferences.saveSortType(event.sortType)
+                    _sortType.value = event.sortType
+                }
             }
 
             is NotesEvent.setContent -> {
@@ -146,15 +157,9 @@ class NotesViewModel(
                     )
                 }
             }
-
-
         }
-
     }
-
 }
-
-
 
 private fun getFormattedTime(): String {
     val currentTime = System.currentTimeMillis()
