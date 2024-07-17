@@ -1,5 +1,6 @@
 package com.kkdev.notable.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import com.kkdev.notable.ui.theme.AppTheme
 import com.kkdev.notable.ui.theme.urbanistFontFamily
 import kotlinx.coroutines.delay
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

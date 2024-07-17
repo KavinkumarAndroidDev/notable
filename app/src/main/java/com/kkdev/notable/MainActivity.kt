@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.kkdev.notable.data.NotesDatabase
-import com.kkdev.notable.data.NotesEvent
 import com.kkdev.notable.navigation.NavigationItem
 import com.kkdev.notable.repository.SettingsPreferences
 import com.kkdev.notable.screens.NotesAddScreen
