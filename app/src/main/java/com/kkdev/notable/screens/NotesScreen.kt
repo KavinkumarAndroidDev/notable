@@ -50,6 +50,7 @@ import androidx.navigation.NavController
 import com.kkdev.notable.R
 import com.kkdev.notable.composables.CustomFab
 import com.kkdev.notable.composables.CustomNotesView
+import com.kkdev.notable.composables.SwipeToDeleteContainer
 import com.kkdev.notable.data.NotesEvent
 import com.kkdev.notable.data.NotesState
 import com.kkdev.notable.navigation.NavigationItem
@@ -57,14 +58,17 @@ import com.kkdev.notable.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     state: NotesState,
     onEvent: (NotesEvent) -> Unit,
     navController: NavController
-){
-    Scaffold (
+) {
+    LaunchedEffect(state.notes) {
+        onEvent(NotesEvent.updateDA)
+    }
+
+    Scaffold(
         floatingActionButton = {
             CustomFab(onClick = {
                 navController.navigate(NavigationItem.AddNote.route)
@@ -72,20 +76,20 @@ fun NotesScreen(
         },
         topBar = {
             TopAppBar(
-                title = { Text(
-                    text = "Notable",
-                    style = AppTheme.typography.titleNormal)
+                title = {
+                    Text(
+                        text = "Notable",
+                        style = AppTheme.typography.titleNormal
+                    )
                 },
                 actions = {
-                    IconButton(onClick = {
-
-                    }) {
+                    IconButton(onClick = { /* TODO: Implement search */ }) {
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Search the notes"
                         )
                     }
-                    IconButton(onClick = {navController.navigate(NavigationItem.Settings.route)}) {
+                    IconButton(onClick = { navController.navigate(NavigationItem.Settings.route) }) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = "Menu icon"
@@ -96,33 +100,13 @@ fun NotesScreen(
         },
         modifier = Modifier.padding(16.dp)
     ) {
-        if(state.noteAvailable){
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.todo_svg),
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.heightIn(20.dp))
-                Text(
-                    text = "Create your first notes...",
-                    color = AppTheme.colorScheme.onPrimary,
-                    style = AppTheme.typography.labelLarge
-                )
-            }
-        }else{
+        if (state.noteAvailable) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
                 items(state.notes, key = { it.id }) { notes ->
                     SwipeToDeleteContainer(
                         item = notes,
@@ -142,89 +126,29 @@ fun NotesScreen(
                     }
                 }
             }
-        }
-
-    }
-}
-
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun <T> SwipeToDeleteContainer(
-    item: T,
-    onDelete: (T) -> Unit,
-    onClick: () -> Unit,
-    animationDuration: Int = 500,
-    content: @Composable (T) -> Unit,
-) {
-    var isRemoved by remember {
-        mutableStateOf(false)
-    }
-    val state = rememberDismissState(
-        confirmValueChange = { value ->
-            if (value == DismissValue.DismissedToStart) {
-                isRemoved = true
-                true
-            } else {
-                false
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.todo_svg),
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.heightIn(20.dp))
+                Text(
+                    text = "Create your first notes...",
+                    color = AppTheme.colorScheme.onPrimary,
+                    style = AppTheme.typography.labelLarge
+                )
             }
         }
-    )
-
-    LaunchedEffect(key1 = isRemoved) {
-        if(isRemoved) {
-            delay(animationDuration.toLong())
-            onDelete(item)
-        }
-    }
-
-    AnimatedVisibility(
-        visible = !isRemoved,
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = animationDuration),
-            shrinkTowards = Alignment.Top
-        ) + fadeOut()
-    ) {
-        Card(
-            shape = AppTheme.shape.container,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick),
-
-        ) {
-            SwipeToDismiss(
-                state = state,
-                background = {
-                    DeleteBackground(swipeDismissState = state)
-                },
-                dismissContent = { content(item) },
-                directions = setOf(DismissDirection.EndToStart)
-            )
-        }
-
     }
 }
 
-@Composable
-fun DeleteBackground(
-    swipeDismissState: DismissState
-) {
-    val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
-        AppTheme.colorScheme.error
-    } else Color.Transparent
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = null,
-            tint = AppTheme.colorScheme.onError
-        )
-    }
-}
+
+
+

@@ -9,18 +9,14 @@ import com.kkdev.notable.data.daos.NotesDao
 import com.kkdev.notable.data.model.Notes
 import com.kkdev.notable.repository.SettingsPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalCoroutinesApi::class)class NotesViewModel(
+@OptIn(ExperimentalCoroutinesApi::class)
+class NotesViewModel(
     private val dao: NotesDao,
     private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
@@ -42,17 +38,18 @@ import java.util.Locale
                 SortType.NEWEST_FIRST -> dao.getNewNotes()
                 SortType.OLDEST_FIRST -> dao.getOldNotes()
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _state = MutableStateFlow(NotesState())
 
     val state = combine(_state, _sortType, _notes) { state, sortType, notes ->
         state.copy(
             notes = notes,
-            sortType = sortType
+            sortType = sortType,
+            noteAvailable = notes.isNotEmpty()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NotesState())
-
 
     fun onEvent(event: NotesEvent) {
         when (event) {
@@ -61,7 +58,13 @@ import java.util.Locale
                     dao.deleteNotes(event.notes)
                 }
             }
-
+            NotesEvent.updateDA -> {
+                _state.update {
+                    it.copy(
+                        noteAvailable = it.notes.isNotEmpty()
+                    )
+                }
+            }
             NotesEvent.SaveNotes -> {
                 val notesTitle = state.value.notesTitle
                 val notesContent = state.value.notesContent
@@ -87,14 +90,12 @@ import java.util.Locale
                     )
                 }
             }
-
             is NotesEvent.SortNotes -> {
                 viewModelScope.launch {
                     settingsPreferences.saveSortType(event.sortType)
                     _sortType.value = event.sortType
                 }
             }
-
             is NotesEvent.setContent -> {
                 _state.update {
                     it.copy(
@@ -102,7 +103,6 @@ import java.util.Locale
                     )
                 }
             }
-
             is NotesEvent.setTitle -> {
                 _state.update {
                     it.copy(
@@ -110,7 +110,6 @@ import java.util.Locale
                     )
                 }
             }
-
             is NotesEvent.lastEdited -> {
                 _state.update {
                     it.copy(
@@ -118,7 +117,6 @@ import java.util.Locale
                     )
                 }
             }
-
             NotesEvent.DiscardNotes -> {
                 _state.update {
                     it.copy(
@@ -128,7 +126,6 @@ import java.util.Locale
                     )
                 }
             }
-
             NotesEvent.HideAlertDialog -> {
                 _state.update {
                     it.copy(
@@ -143,7 +140,6 @@ import java.util.Locale
                     )
                 }
             }
-
             NotesEvent.HideSortTypeDialog -> {
                 _state.update {
                     it.copy(
@@ -159,22 +155,6 @@ import java.util.Locale
                 }
             }
         }
-    }
-    fun checkAvailability(){
-        if (state.value.notes.isEmpty()){
-            _state.update {
-                it.copy(
-                    noteAvailable = true
-                )
-            }
-        }else{
-            _state.update {
-                it.copy(
-                    noteAvailable = false
-                )
-            }
-        }
-
     }
 }
 
