@@ -105,7 +105,7 @@ fun NotesScreen(
                     }
                 }
             }
-        } else {
+        }else{
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -127,7 +127,5 @@ fun NotesScreen(
         }
     }
 }
-
-
 
 

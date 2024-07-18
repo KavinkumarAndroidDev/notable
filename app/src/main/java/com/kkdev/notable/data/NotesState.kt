@@ -10,5 +10,5 @@ data class NotesState (
     val isShowingAlert: Boolean = false,
     val isShowingSortType: Boolean = false,
     val sortType: SortType = SortType.NEWEST_FIRST,
-    val noteAvailable: Boolean = false
+    val noteAvailable: Boolean = true
 )
